@@ -19,7 +19,7 @@ st.write("Choose the fruits you want in your custom smoothie")
 
 name_on_order = st.text_input('Name on Smoothie: ')
 
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
+my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'), col('SEARCH_ON'))
 # st.dataframe(data=my_dataframe, use_container_width=True)
 
 ingredients_string = ''
@@ -35,8 +35,8 @@ if ingredients_list and name_on_order:
     ingredients_string = ' '.join(ingredients_list) + ' '
 
     for fruit_chosen in ingredients_list:
-        search_on = my_dataframe.filter(col('FRUIT_NAME') == fruit_chosen).select(col('SEARCH_ON')).collect()
-        st.text(f'Search for: {fruit_chosen} {search_on[0]}')
+        search_on = my_dataframe.filter(col('FRUIT_NAME') == fruit_chosen).select(col('SEARCH_ON')).collect()[0][0]
+        st.write(f'You chose: {fruit_chosen} with search term: {search_on}')
         smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + fruit_chosen)
         sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
 
