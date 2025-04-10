@@ -1,5 +1,6 @@
 # Import python packages
 import streamlit as st
+import requests
 from snowflake.snowpark.functions import col
 
 cnx = st.connection("snowflake")
@@ -33,8 +34,10 @@ ingredients_list = st.multiselect(
 if ingredients_list and name_on_order:
     ingredients_string = ' '.join(ingredients_list) + ' '
 
-    st.write(name_on_order)
-    st.write(ingredients_string)
+    for fruit_chosen in ingredients_list:
+        smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/" + fruit_chosen)
+        sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
+
     time_to_insert = st.button('Submit Order')
 
     if time_to_insert:
